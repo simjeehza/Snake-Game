@@ -1,6 +1,6 @@
 #include <iostream>
-#include <conio.h> // Include this header for _getch() function (Windows)
-#include <windows.h> // Include this header for Sleep() function (Windows)
+#include <conio.h> 
+#include <windows.h> 
 
 using namespace std;
 
@@ -13,8 +13,8 @@ int hScore = score;
 enum eDirection { STOP = 0, LEFT, RIGHT, UP, DOWN };
 eDirection dir;
 
-int tailX[100], tailY[100]; // Snake tail coordinates
-int nTail = 0; // Length of the tail
+int tailX[100], tailY[100]; 
+int nTail = 0; 
 
 void Setup() {
     gameOver = false;
@@ -70,8 +70,8 @@ void Draw() {
 }
 
 void Input() {
-    if (_kbhit()) { // Check if a key is pressed
-        switch (_getch()) { // Get the pressed key
+    if (_kbhit()) { 
+        switch (_getch()) { 
         case 'a':
             dir = LEFT;
             break;
@@ -124,35 +124,61 @@ void Logic() {
         break;
     }
 
-    // Wrap around the screen if the snake goes out of bounds
+
     if (x >= width) x = 0; else if (x < 0) x = width - 1;
     if (y >= height) y = 0; else if (y < 0) y = height - 1;
 
-    // Check for collision with tail
+
     for (int i = 0; i < nTail; i++) {
         if (tailX[i] == x && tailY[i] == y) {
-            gameOver = true; // Snake collides with itself
+            gameOver = true; 
         }
     }
 
     if (x == xFruit && y == yFruit) {
         score += 10;
         if (score > hScore) {
-            hScore = score; // Update high score
+            hScore = score;
         }
         xFruit = rand() % width;
         yFruit = rand() % height;
-        nTail++; // Increase the tail length
+        nTail++;
     }
 }
 
+void DrawGameOver() {
+    system("cls");
+    cout << "GAME OVER" << endl;
+    cout << "Score: " << score << endl;
+    cout << "High Score: " << hScore << endl;
+    cout << "Play again? (Y/N): ";
+}
+
+bool PlayAgain() {
+    char choice = _getch();
+    return (choice == 'y' || choice == 'Y');
+}
+
 int main() {
+    bool playagain = true;
     Setup();
-    while (!gameOver) {
-        Draw();
-        Input();
-        Logic();
-        Sleep(100); 
+    while(playagain){
+        while (!gameOver) {
+            Draw();
+            Input();
+            Logic();
+            Sleep(100); 
+        }
+
+        DrawGameOver();
+        Sleep(1000);
+
+        playagain = PlayAgain();
+
+        if(playagain) {
+            Setup();
+        }
     }
+    cout << "Thanks for playing!" << endl;
     return 0;
 }
